@@ -1,10 +1,13 @@
+# Date: August 19, 2022
+# Author: Agung Fazrulhaq (agung.fazrulhaq@epsindo.co.id)
+# Edited: Benedicto Elpidius
+
+
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## Import libraries and Setup
 
-# In[2]:
-
+# In[1]: Import libraries 
 
 # Common imports
 import numpy as np
@@ -15,20 +18,16 @@ import threading
 
 get_ipython().system('jupyter nbextension enable --py widgetsnbextension')
 
-# TensorFlow imports
-# may differs from version to versions
+# TensorFlow imports may differs from version to versions
 import tensorflow as tf
 from tensorflow import keras
 
 # OpenCV to enable camera viewing
 import cv2
 
-
-# In[3]:
-
+# In[2]: Setup
 
 # Stop button
-# ================
 stopButton = widgets.ToggleButton(
     value=False,
     description='Stop',
@@ -42,11 +41,7 @@ stopButton = widgets.ToggleButton(
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
 
-
-# ## Load Model
-
-# In[4]:
-
+# In[3]: Load Model
 
 # Load model to face classification
 # model was created in masker_model_comparison.ipynb notebook
@@ -55,10 +50,6 @@ model_name = 'mask_classifier_ResNet50_aug.h5'
 face_classifier = keras.models.load_model(f'models/{model_name}')
 
 class_names = ['mask', 'no_mask']
-
-
-# In[7]:
-
 
 def get_extended_image(img, x, y, w, h, k=0.1):
     '''
@@ -100,10 +91,6 @@ def get_extended_image(img, x, y, w, h, k=0.1):
     # shape from (250, 250, 3) to (1, 250, 250, 3)
     face_image = np.expand_dims(face_image, axis=0)
     return face_image
-
-
-# In[22]:
-
 
 def view(button):
     # opencv object that will detect mask for us
@@ -179,10 +166,9 @@ def view(button):
         if stopButton.value==True:
             video_capture.release()
             display_handle.update(None)
-    
-# Run
-# ================
+
+# In[4]: Run Model
+
 display(stopButton)
 thread = threading.Thread(target=view, args=(stopButton,))
 thread.start()
-

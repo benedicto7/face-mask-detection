@@ -1,10 +1,13 @@
+# Date: August 19, 2022
+# Author: Agung Fazrulhaq (agung.fazrulhaq@epsindo.co.id)
+# Edited: Benedicto Elpidius
+
+
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Import Libraries
 
-# In[2]:
-
+# In[1]: Import Libraries
 
 # Common imports
 import os
@@ -18,26 +21,15 @@ import seaborn as sns
 get_ipython().run_line_magic('matplotlib', 'inline')
 sns.set()
 
-
-# In[3]:
-
-
-# TensorFlow imports
-# may differs from version to versions
+# TensorFlow imports may differs from version to versions
 import tensorflow as tf
 from tensorflow import keras
-
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.callbacks import EarlyStopping
 
+# In[2]: Set Some Parameters
 
-# ## Set Some Parameters
-
-# In[4]:
-
-
-# Dataset information
-# Test dataset is set explicitly, because the amount of data is very small
+# Dataset information: Test dataset is set explicitly, because the amount of data is very small
 train_aug_image_folder = os.path.join('datasets', 'augmentation')
 train_image_folder = os.path.join('datasets', 'training')
 test_image_folder = os.path.join('datasets', 'testing')
@@ -53,12 +45,7 @@ batch_size = 16
 AUTOTUNE = tf.data.AUTOTUNE
 
 
-# ## Create Dataset
-
-# ### Read datasets from folders
-
-# In[5]:
-
+# In[3]: Create Dataset; Read datasets from folders
 
 # Train and validation sets of initial dataset
 train_ds = keras.preprocessing.image_dataset_from_directory(
@@ -81,10 +68,6 @@ val_ds = keras.preprocessing.image_dataset_from_directory(
     label_mode='categorical',
     shuffle=True)
 
-
-# In[6]:
-
-
 # Train and validation sets of augmented dataset
 train_aug_ds = keras.preprocessing.image_dataset_from_directory(
     train_aug_image_folder,
@@ -106,10 +89,6 @@ val_aug_ds = keras.preprocessing.image_dataset_from_directory(
     label_mode='categorical',
     shuffle=True)
 
-
-# In[7]:
-
-
 # Test model later on using testing dataset 
 test_ds = keras.preprocessing.image_dataset_from_directory(
     test_image_folder,
@@ -117,40 +96,25 @@ test_ds = keras.preprocessing.image_dataset_from_directory(
     label_mode='categorical',
     shuffle=False)
 
-
-# In[8]:
-
-
 # Print the total number of images/files in testing directory of mask and no mask
 count1 = os.listdir("/workspace/masker_detection/datasets/testing/mask")
 print(len(count1))
+
 count2 = os.listdir("/workspace/masker_detection/datasets/testing/no_mask")
 print(len(count2))
 
 count3 = os.listdir("/workspace/masker_detection/datasets/testing")
 print(len(count3))
 
-
-# In[9]:
-
-
 class_names = test_ds.class_names
 class_names
 
-
-# # Build The Model 
-
-# In[10]:
-
+# In[4]: Build The Model 
 
 # Here I experimented with different models
 # Each model is represented in it own cells
 
-
-# ## VGG16
-
-# In[25]:
-
+# In[5]: VGG16 Model
 
 base_model = keras.applications.vgg16.VGG16(weights='imagenet',
                                             include_top=False,  # without dense part of the network
@@ -166,16 +130,11 @@ dense_4096_1 = keras.layers.Dense(4096, activation='relu')(flatten)
 dense_4096_2 = keras.layers.Dense(4096, activation='relu')(dense_4096_1)
 output = keras.layers.Dense(num_classes, activation='sigmoid')(dense_4096_2)
 
-VGG16 = keras.models.Model(inputs=base_model.input,
-                           outputs=output,
-                           name='VGG16')
+VGG16 = keras.models.Model(inputs=base_model.input, outputs=output, name='VGG16')
+
 VGG16.summary()
 
-
-# ## ResNet50
-
-# In[11]:
-
+# In[6]: ResNet50 Model
 
 base_model = keras.applications.ResNet50(weights='imagenet',
                                          include_top=False,  # without dense part of the network
@@ -189,16 +148,11 @@ for layer in base_model.layers:
 global_avg_pooling = keras.layers.GlobalAveragePooling2D()(base_model.output)
 output = keras.layers.Dense(num_classes, activation='sigmoid')(global_avg_pooling)
 
-ResNet50 = keras.models.Model(inputs=base_model.input,
-                              outputs=output,
-                              name='ResNet50')
+ResNet50 = keras.models.Model(inputs=base_model.input, outputs=output, name='ResNet50')
+
 ResNet50.summary()
 
-
-# ## ResNet152
-
-# In[16]:
-
+# In[7]: ResNet152 Model
 
 base_model = keras.applications.ResNet152(weights='imagenet',
                                           include_top=False,  # without dense part of the network
@@ -212,16 +166,11 @@ for layer in base_model.layers:
 global_avg_pooling = keras.layers.GlobalAveragePooling2D()(base_model.output)
 output = keras.layers.Dense(num_classes, activation='sigmoid')(global_avg_pooling)
 
-ResNet152 = keras.models.Model(inputs=base_model.input,
-                               outputs=output,
-                               name='ResNet152')
+ResNet152 = keras.models.Model(inputs=base_model.input, outputs=output, name='ResNet152')
+
 ResNet152.summary()
 
-
-# ## Xception
-
-# In[17]:
-
+# In[8]: Xception Model
 
 base_model = keras.applications.Xception(weights='imagenet',
                                          include_top=False,  # without dense part of the network
@@ -235,16 +184,11 @@ for layer in base_model.layers:
 global_avg_pooling = keras.layers.GlobalAveragePooling2D()(base_model.output)
 output = keras.layers.Dense(num_classes, activation='sigmoid')(global_avg_pooling)
 
-Xception = keras.models.Model(inputs=base_model.input,
-                              outputs=output,
-                              name='Xception')
+Xception = keras.models.Model(inputs=base_model.input, outputs=output, name='Xception')
+
 Xception.summary()
 
-
-# ## MobileNet
-
-# In[55]:
-
+# In[9]: MobileNet Model
 
 base_model = keras.applications.MobileNet(weights='imagenet',
                                           include_top=False,  # without dense part of the network
@@ -258,13 +202,11 @@ for layer in base_model.layers:
 global_avg_pooling = keras.layers.GlobalAveragePooling2D()(base_model.output)
 output = keras.layers.Dense(num_classes, activation='sigmoid')(global_avg_pooling)
 
-MobileNet = keras.models.Model(inputs=base_model.input,
-                               outputs=output,
-                               name='MobileNet')
+MobileNet = keras.models.Model(inputs=base_model.input, outputs=output, name='MobileNet')
+
 MobileNet.summary()
 
-
-# # Training
+# In[10]: Training
 
 # Choose one of the models in next cell. Possible options:
 # - VGG16
@@ -272,13 +214,8 @@ MobileNet.summary()
 # - ResNet152
 # - Xception
 # - MobileNet
-# 
-# Then choose if you want to train CNN on augmented dataset. 
-# - If you choose `train_on_aug = True` CNN will train on augmented dataset, 
-# - if `train_on_aug = False` on base dataset (195 images).
 
-# In[12]:
-
+# In[11]: Choosing Model to train
 
 # Train model ResNet50
 mask_classifier = ResNet50
@@ -296,18 +233,10 @@ if train_on_aug:
 else:
     name_to_save = f"models/mask_classifier_{mask_classifier.name}.h5"
 
-
-# ## All models trains in one context, so this part of the code is the same
-
-# In[13]:
-
+# In[12]: All models trains in one context, so this part of the code is the same
 
 # ModelCheckpoint to save model in case of interrupting the learning process
-checkpoint = ModelCheckpoint(name_to_save,
-                             monitor="val_loss",
-                             mode="min",
-                             save_best_only=True,
-                             verbose=1)
+checkpoint = ModelCheckpoint(name_to_save, monitor="val_loss", mode="min", save_best_only=True, verbose=1)
 
 # EarlyStopping to find best model with a large number of epochs
 # Stops the training when the model has stopped improving
@@ -318,50 +247,22 @@ earlystop = EarlyStopping(monitor='val_loss',
 
 callbacks = [earlystop, checkpoint]
 
-
-# In[14]:
-
-
-mask_classifier.compile(loss='categorical_crossentropy',
-                        optimizer=keras.optimizers.Adam(learning_rate=0.01),
-                        metrics=['accuracy'])
-
-
-# In[15]:
-
+mask_classifier.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(learning_rate=0.01), metrics=['accuracy'])
 
 epochs = 50
-
-
-# In[16]:
-
 
 history = mask_classifier.fit(train_ds, epochs=epochs, callbacks=callbacks, validation_data=val_ds)
 
 mask_classifier.save(name_to_save)
 
-
-# In[23]:
-
-
 # Creates a directory containing the built and trained model
 mask_classifier.save("models/mask_classifier")
 
-
-# # Testing
-
-# ## Choose a model to test
-
-# In[17]:
-
+# In[13]: Choosing Model to test
 
 # Test model ResNet50
 model_name = 'mask_classifier_ResNet50_aug.h5'
 mask_classifier = keras.models.load_model(f'models/{model_name}')
-
-
-# In[18]:
-
 
 def test_image_classifier_with_folder(model, path, y_true, img_height=250, img_width=250, class_names=['mask', 'no_mask']):
     '''
@@ -398,8 +299,7 @@ def test_image_classifier_with_folder(model, path, y_true, img_height=250, img_w
         test_image = np.expand_dims(test_image, axis=0)
         result = model.predict(test_image)
 
-        y_pred = class_names[np.array(result[0]).argmax(
-            axis=0)]  # predicted class
+        y_pred = class_names[np.array(result[0]).argmax(axis=0)]  # predicted class
         iscorrect = 'correct' if y_pred == y_true else 'incorrect' # mask_on mask_off
         
         print('{} - {}'.format(iscorrect, filename))
@@ -415,38 +315,22 @@ def test_image_classifier_with_folder(model, path, y_true, img_height=250, img_w
     print("\nTotal accuracy is {:.2f}% = {}/{} samples classified correctly".format(
         correct/total*100, correct, total))
 
-
-# In[19]:
-
-
 # Test mask images
-test_image_classifier_with_folder(mask_classifier,
-                                  'datasets/testing/mask',
-                                  y_true='mask')
+test_image_classifier_with_folder(mask_classifier, 'datasets/testing/mask', y_true='mask')
 
-
-# In[20]:
-
-
-# Test no mask images
+# Test no_mask images
 test_image_classifier_with_folder(mask_classifier,
                                   'datasets/testing/no_mask',
                                   y_true='no_mask')
 
-
-# ## Test of particular Mask Image
-
-# In[24]:
-
+# In[14]: Test a particular Mask Image
 
 # Choose one image to test
 test_path = 'datasets/testing/mask/test_image.jpeg'
 test_image = keras.preprocessing.image.load_img(test_path, target_size=(img_height, img_width, 3))
+
+# Outputs the chosen image
 test_image
-
-
-# In[25]:
-
 
 # Detect whether the image is using a mask or not
 test_image = keras.preprocessing.image.img_to_array(test_image)  # from image to array
@@ -458,23 +342,18 @@ for index in range(num_classes):
     print("{:6} with probabily of {:.2f}%".format(
         class_names[index], result[0][index] * 100))
 
-
-# ## Test of particular No Mask Image
-
-# In[22]:
-
+# In[15]: Test a particular No Mask Image
 
 # Choose one image to test
 test_path = 'datasets/testing/no_mask/test_image.jpg'
 test_image = keras.preprocessing.image.load_img(test_path, target_size=(img_height, img_width, 3))
+
+# Outputs the chosen image
 test_image
-
-
-# In[23]:
-
 
 # Detect whether the image is using a mask or not
 test_image = keras.preprocessing.image.img_to_array(test_image)  # from image to array
+
 # shape from (250, 250, 3) to (1, 250, 250, 3)
 test_image = np.expand_dims(test_image, axis=0)
 result = mask_classifier.predict(test_image)
@@ -483,15 +362,10 @@ for index in range(num_classes):
     print("{:6} with probabily of {:.2f}%".format(
         class_names[index], result[0][index] * 100))
 
-
-# # Plotting
-
-# In[22]:
-
+# In[16]: Plotting
 
 dataset_size = [1, 2, 3, 4, 5, 10, 15, 20, 25]
 training_time_per_epoch = [2, 4, 6, 8, 9, 19, 30, 35, 46]
-
 
 fig = plt.figure(figsize=(8, 4))
 plt.plot(dataset_size, training_time_per_epoch, marker='o', label="Training Time")
@@ -505,14 +379,9 @@ plt.show()
 
 # The dependence of the training time (per epoch) on the dataset size is linear
 
-
-# In[1]:
-
-
 dataset_size = [1, 2, 3, 4, 5, 10, 15, 20, 25]
 val_loss = [0.8011, 0.2802, 0.2479, 0.2653, 0.191, 0.2191, 0.09886, 0.10429, 0.1322]
 val_accuracy = [0.8276, 0.9138, 0.908, 0.8718, 0.911, 0.911, 0.9589, 0.9497, 0.9479]
-
 
 fig = plt.figure(figsize=(8, 4))
 plt.plot(dataset_size, val_loss, c="red", linewidth=2, marker='o', label="Validation Loss")
@@ -524,10 +393,3 @@ plt.ylabel("Model Quality", fontsize='14')
 plt.legend(loc='best')
 plt.savefig('article/img/dataset_size_to_model_quality.jpg')
 plt.show()
-
-
-# In[ ]:
-
-
-
-
