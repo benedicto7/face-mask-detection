@@ -1,4 +1,4 @@
-# Face Mask Detection Vision AI 
+# Face Mask Detection Vision AI
 
 ## Description
 Face Mask Detection is a vision AI application that detects whether the person is wearing a mask or not. It detects and displays bounding boxes and labels that indicates whether the person is wearing a mask or not depending on the state of the person (mask/no_mask). In this project, I was personally mentored and helped by Mr. Agung Fazrulhaq (agung.fazrulhaq@epsindo.co.id) to create this face mask detection. This project used a pre-model created by Mr. Agung (me/not_me) which detects if the person is him or another person. Additionally, this project used peoplenet, in the Deep Stream SDK, which detects if the object detect is a person or not.
