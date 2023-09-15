@@ -22,10 +22,14 @@ Face Mask Detection is a vision AI application that detects whether the person i
 
 ## Final Result of Project
 https://user-images.githubusercontent.com/90052277/185654356-efaab18d-d309-4bf2-8f8d-493c67240676.mp4
+https://github.com/benedicto7/face-mask-detection/assets/90052277/7b7a0eb9-536e-470c-801c-c1a86f8745d7
 
 https://user-images.githubusercontent.com/90052277/185654428-9a0d090d-9308-4489-8d30-59b318f3bddf.mp4
+https://github.com/benedicto7/face-mask-detection/assets/90052277/ed2f3852-5bf8-4617-84d2-c842de338f63
 
 https://user-images.githubusercontent.com/90052277/185654451-026e60ec-dfa2-41db-b9c3-a08f50df2500.mp4
+https://github.com/benedicto7/face-mask-detection/assets/90052277/301c3fe5-db04-47db-b55a-4e04ecdc7fb7
+
 
 ## Local Host to JupyterLab
 Data Augmentation, Build Model, and Training <br/>
